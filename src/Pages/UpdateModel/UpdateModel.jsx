@@ -1,22 +1,24 @@
-import { use } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { useLoaderData, useNavigate } from "react-router";
 
-const AddModal = () => {
-  const { user } = use(AuthContext);
-  const handlesubmit = (e) => {
+const UpdateModel = () => {
+  const data = useLoaderData();
+  //   console.log(data);
+  const { _id, name, category, description, thumbnail } = data.result;
+
+  const navigate = useNavigate();
+  // ____________________________________
+
+  const handleUpdate = (e) => {
     e.preventDefault();
     const formData = {
       name: e.target.name.value,
       category: e.target.category.value,
       description: e.target.description.value,
       thumbnail: e.target.thumbnail.value,
-      created_at: new Date(),
-      downloads: 0,
-      created_by: user.email,
     };
-//! post data in DB---------------------------
-    fetch("http://localhost:3000/models", {
-      method: "POST",
+    //! post data in DB---------------------------
+    fetch(`http://localhost:3000/models/${_id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -25,19 +27,22 @@ const AddModal = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("add model", data);
+        navigate("/all-models");
       });
   };
 
+  // ____________________________________
   return (
-    <div className="card border border-gray-200 bg-base-100 w-full max-w-md mx-auto shadow-2xl rounded-2xl">
+    <div className="card bg-base-100 w-full max-w-md mx-auto shadow-2xl rounded-2xl">
       <div className="card-body p-6 relative">
-        <h2 className="text-2xl font-bold text-center mb-6">Add New Model</h2>
-        <form onSubmit={handlesubmit} className="space-y-4">
+        <h2 className="text-2xl font-bold text-center mb-6">Update Model</h2>
+        <form onSubmit={handleUpdate} className="space-y-4">
           {/* Name Field */}
           <div>
             <label className="label font-medium">Name</label>
             <input
               type="text"
+              defaultValue={name}
               name="name"
               required
               className="input w-full rounded-full focus:border-0 focus:outline-gray-200"
@@ -49,7 +54,7 @@ const AddModal = () => {
           <div>
             <label className="label font-medium">Category</label>
             <select
-              defaultValue={""}
+              defaultValue={category}
               name="category"
               required
               className="select w-full rounded-full focus:border-0 focus:outline-gray-200"
@@ -72,6 +77,7 @@ const AddModal = () => {
           <div>
             <label className="label font-medium">Description</label>
             <textarea
+              defaultValue={description}
               name="description"
               required
               rows="3"
@@ -86,6 +92,7 @@ const AddModal = () => {
             <input
               type="url"
               name="thumbnail"
+              defaultValue={thumbnail}
               required
               className="input w-full rounded-full focus:border-0 focus:outline-gray-200"
               placeholder="https://example.com/image.jpg"
@@ -97,7 +104,7 @@ const AddModal = () => {
             type="submit"
             className="btn w-full text-white mt-6 rounded-full bg-linear-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700"
           >
-            Add Model
+            Update Model
           </button>
         </form>
       </div>
@@ -105,4 +112,4 @@ const AddModal = () => {
   );
 };
 
-export default AddModal;
+export default UpdateModel;
